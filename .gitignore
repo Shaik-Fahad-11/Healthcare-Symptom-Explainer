@@ -1,0 +1,11 @@
+Python files
+
+__pycache__/
+*.pyc
+venv/
+
+# Environment variables (CRITICAL)
+.env
+
+# Database files (if local)
+*.sqlite3

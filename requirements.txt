@@ -1,0 +1,8 @@
+Flask
+google-generativeai
+psycopg2-binary
+python-dotenv
+Pillow
+Flask-Login
+werkzeug
+reportlab
