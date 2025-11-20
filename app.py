@@ -138,6 +138,7 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) FROM chat_logs")
     total_chats = cur.fetchone()[0]
     
+    # Stats: No change needed here as this is aggregate admin data
     cur.execute("SELECT user_input FROM chat_logs ORDER BY timestamp DESC LIMIT 100")
     messages = [row[0] for row in cur.fetchall()]
     
@@ -163,11 +164,21 @@ def chat():
         return jsonify({'error': 'No input provided'}), 400
 
     try:
-        # Build History
+        # --- UPDATED: Build History with User Isolation ---
         history = []
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT user_input, ai_response FROM chat_logs WHERE session_id = %s ORDER BY timestamp ASC LIMIT 5", (session_id,))
+        
+        # CRITICAL CHANGE: Added "AND user_id = %s"
+        # This ensures the user only retrieves history tied to their specific account ID.
+        cur.execute("""
+            SELECT user_input, ai_response 
+            FROM chat_logs 
+            WHERE session_id = %s AND user_id = %s 
+            ORDER BY timestamp ASC 
+            LIMIT 5
+        """, (session_id, current_user.id))
+        
         rows = cur.fetchall()
         for row in rows:
              user_text = row[0].replace("[Image Uploaded] ", "")
@@ -193,7 +204,7 @@ def chat():
         response = chat_session.send_message(current_parts)
         ai_text = response.text
 
-        # Save to DB
+        # Save to DB (Already has user_id, this is good)
         db_user_input = f"[Image Uploaded] {user_message}" if has_image else user_message
         cur.execute(
             "INSERT INTO chat_logs (session_id, user_input, ai_response, has_image, image_data, user_id) VALUES (%s, %s, %s, %s, %s, %s)",
@@ -220,11 +231,7 @@ def markdown_to_flowables(text, styles):
     normal_style = styles['Normal']
     normal_style.fontSize = 10
     normal_style.leading = 14
-    
-    # Style for Table Cells (Small font to fit)
     cell_style = ParagraphStyle('Cell', parent=normal_style, fontSize=9, leading=11)
-    
-    # List Style
     bullet_style = ParagraphStyle('Bullet', parent=normal_style, leftIndent=15, firstLineIndent=0, spaceAfter=2)
 
     for line in lines:
@@ -234,45 +241,35 @@ def markdown_to_flowables(text, styles):
             
         # --- TABLE DETECTION ---
         if line.startswith('|'):
-            # It's a table row
-            if '---' in line: continue # Skip separator lines like |---|---|
-            
-            # Extract cells: | A | B | -> ['A', 'B']
+            if '---' in line: continue
             cells = [c.strip() for c in line.strip('|').split('|')]
-            
-            # Wrap text in Paragraphs so it wraps inside the table cell
             row_cells = [Paragraph(cell, cell_style) for cell in cells]
             
             if not in_table:
                 in_table = True
                 table_data = []
-            
             table_data.append(row_cells)
             continue
         else:
-            # If we were in a table, it just ended. Create the table now.
             if in_table and table_data:
-                # Calculate column widths dynamically based on content count
                 col_count = len(table_data[0])
-                avail_width = 460 # approx page width
+                avail_width = 460
                 col_width = avail_width / col_count if col_count > 0 else 100
-                
                 t = Table(table_data, colWidths=[col_width] * col_count)
                 t.setStyle(TableStyle([
-                    ('BACKGROUND', (0,0), (-1,0), colors.teal), # Header Row Background
-                    ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke), # Header Text
+                    ('BACKGROUND', (0,0), (-1,0), colors.teal),
+                    ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
                     ('ALIGN', (0,0), (-1,-1), 'LEFT'),
                     ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
                     ('BOTTOMPADDING', (0,0), (-1,0), 8),
-                    ('BACKGROUND', (0,1), (-1,-1), colors.whitesmoke), # Body Background
-                    ('GRID', (0,0), (-1,-1), 0.5, colors.grey), # Borders
+                    ('BACKGROUND', (0,1), (-1,-1), colors.whitesmoke),
+                    ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
                     ('VALIGN', (0,0), (-1,-1), 'TOP'),
                     ('LEFTPADDING', (0,0), (-1,-1), 6),
                     ('RIGHTPADDING', (0,0), (-1,-1), 6),
                 ]))
                 flowables.append(t)
                 flowables.append(Spacer(1, 12))
-                
                 in_table = False
                 table_data = []
 
@@ -284,17 +281,15 @@ def markdown_to_flowables(text, styles):
             continue
             
         # --- BOLD TEXT PARSING ---
-        # Replace **text** with <b>text</b> for ReportLab
         formatted_line = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', line)
         
         # --- LIST DETECTION ---
         if line.startswith('* ') or line.startswith('- '):
-            formatted_line = line[2:] # Remove marker
+            formatted_line = line[2:]
             flowables.append(Paragraph(f"• {formatted_line}", bullet_style))
         else:
             flowables.append(Paragraph(formatted_line, normal_style))
             
-    # Catch table at end of text
     if in_table and table_data:
          col_count = len(table_data[0])
          avail_width = 460
@@ -322,16 +317,22 @@ def download_summary(session_id):
     try:
         conn = get_db_connection()
         cur = conn.cursor()
+        
+        # CRITICAL CHANGE: Added "AND user_id = %s"
+        # Prevents users from guessing a session ID and downloading someone else's report.
         cur.execute("""
-            SELECT user_input, ai_response, timestamp, image_data FROM chat_logs 
-            WHERE session_id = %s 
+            SELECT user_input, ai_response, timestamp, image_data 
+            FROM chat_logs 
+            WHERE session_id = %s AND user_id = %s 
             ORDER BY timestamp ASC
-        """, (session_id,))
+        """, (session_id, current_user.id))
+        
         rows = cur.fetchall()
         cur.close()
         conn.close()
 
         if not rows:
+            # If no rows found (either session doesn't exist OR it belongs to another user)
             return render_template('no_conversation.html'), 404
 
         buffer = io.BytesIO()
@@ -387,18 +388,14 @@ def download_summary(session_id):
             story.append(Paragraph("MediSimplify Analysis:", style_ai_label))
             
             # Use the smart Markdown parser here!
-            # We pass the raw AI text to our helper function
             ai_flowables = markdown_to_flowables(ai_out, styles)
             
-            # Add all parsed elements (Tables, Headers, Text) to the story
             for flowable in ai_flowables:
-                # Indent AI content slightly
                 if hasattr(flowable, 'style'):
                     flowable.style.leftIndent = 10
                 story.append(flowable)
                 
             story.append(Spacer(1, 15))
-            # Add a subtle divider line
             story.append(Paragraph("_" * 90, ParagraphStyle('Line', parent=styles['Normal'], textColor=colors.lightgrey, alignment=1)))
 
         doc.build(story)
