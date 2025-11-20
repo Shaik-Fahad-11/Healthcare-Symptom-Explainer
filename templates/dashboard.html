@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Diagram for Admin Flow -->
+    <!-- [Image of analytical dashboard UI wireframe] -->
+</head>
+
+<body>
+    <div class="app-container" style="flex-direction: column; overflow-y: auto;">
+        <header style="width: 100%;">
+            <h2><i class="ri-admin-fill"></i> Analytics Dashboard</h2>
+            <a href="/" class="auth-btn" style="width: auto; padding: 8px 16px;">Back to Chat</a>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="stat-card glass-panel">
+                <h3>Total Users</h3>
+                <div class="number">{{ total_users }}</div>
+                <i class="ri-user-smile-line icon-bg"></i>
+            </div>
+            <div class="stat-card glass-panel">
+                <h3>Total Conversations</h3>
+                <div class="number">{{ total_chats }}</div>
+                <i class="ri-message-3-line icon-bg"></i>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="margin: 20px; padding: 20px;">
+            <h3>🔥 Trending Symptoms (Last 100 Messages)</h3>
+            <table class="analytics-table">
+                <thead>
+                    <tr>
+                        <th>Keyword</th>
+                        <th>Frequency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for word, count in keywords %}
+                    <tr>
+                        <td>{{ word }}</td>
+                        <td>
+                            <div class="bar-container">
+                                <div class="bar" style="width: {{ count * 10 }}px;"></div>
+                                <span>{{ count }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

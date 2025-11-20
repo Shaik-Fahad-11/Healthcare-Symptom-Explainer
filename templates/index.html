@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSimplify | Healthcare Symptom Explainer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Icons -->
+     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="ri-heart-pulse-fill"></i>
+                <span>MediSimplify</span>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="info-card warning">
+                    <i class="ri-alarm-warning-fill"></i>
+                    <p><strong>Not a Diagnosis</strong><br>AI suggestions only. Call emergency services for severe
+                        symptoms.</p>
+                </div>
+
+                <!-- NEW: PDF Export Button -->
+                <button id="export-btn" class="export-btn">
+                    <i class="ri-file-download-line"></i>
+                    Download Doctor Report
+                </button>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">Session ID:</div>
+                <span id="session-display" style="font-size: 0.75rem; opacity: 0.8;">Loading...</span>
+            </div>
+            <!-- Updated User Profile -->
+            <div class="user-profile">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div class="avatar"
+                        style="background: var(--primary); color: white; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        {{ user.username[0].upper() }}
+                    </div>
+                    <div>
+                        <span style="display: block; color: var(--text-dark);">{{ user.username }}</span>
+                        <span id="session-display" style="font-size: 0.7rem;">Session Active</span>
+                    </div>
+                </div>
+
+                {% if user.is_admin %}
+                <a href="/admin" class="export-btn"
+                    style="text-decoration: none; margin-top: 15px; background: #f0f9ff; color: var(--primary-dark);">
+                    <i class="ri-dashboard-line"></i> Admin Dashboard
+                </a>
+                {% endif %}
+
+                <a href="/logout" class="export-btn"
+                    style="text-decoration: none; margin-top: 5px; background: #fff1f2; color: #be123c;">
+                    <i class="ri-logout-box-line"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-interface">
+            <header>
+                <h2>Symptom Assistant</h2>
+                <span class="status-badge"><span class="dot"></span> Online</span>
+            </header>
+
+            <div id="chat-box" class="chat-box">
+                <!-- Welcome Message -->
+                <div class="message bot">
+                    <div class="bubble">
+                        Hello! I can speak your language. You can type, <strong>use your voice</strong>, or upload
+                        images.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <!-- Image Preview Container -->
+                <div id="image-preview-container" class="image-preview hidden">
+                    <img id="image-preview" src="" alt="Preview">
+                    <button id="remove-image"><i class="ri-close-circle-fill"></i></button>
+                </div>
+
+                <div class="input-wrapper">
+                    <!-- File Upload Button -->
+                    <label for="file-upload" class="attach-btn" title="Attach Image">
+                        <i class="ri-attachment-2"></i>
+                    </label>
+                    <input type="file" id="file-upload" accept="image/*" hidden>
+
+                    <textarea id="user-input" rows="1" placeholder="Type or speak..."></textarea>
+
+                    <!-- Microphone Button -->
+                    <button id="mic-btn" class="icon-btn" title="Speak"><i class="ri-mic-fill"></i></button>
+
+                    <button id="send-btn" class="icon-btn primary"><i class="ri-send-plane-fill"></i></button>
+                </div>
+                <p class="disclaimer">AI can make mistakes. Please verify with a medical professional.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

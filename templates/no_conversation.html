@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSimplify | No Conversation Found</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Gradient Background */
+        body {
+            background: linear-gradient(135deg, #2e0249 0%, #6d2679 50%, #ff9a9e 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            /* Prevent scrollbars from floating elements */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Floating Animation for Icons */
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        /* Pulse Animation for Main Bubble */
+        @keyframes gentle-pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(166, 77, 182, 0.3);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(255, 154, 158, 0.5);
+                transform: scale(1.02);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(166, 77, 182, 0.3);
+                transform: scale(1);
+            }
+        }
+
+        /* Fade In Up Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed-1 {
+            animation: float 7s ease-in-out infinite 1s;
+        }
+
+        .animate-float-delayed-2 {
+            animation: float 8s ease-in-out infinite 2s;
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-pulse-glow {
+            animation: gentle-pulse 4s infinite;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center relative px-4">
+
+    <!-- Main Container -->
+    <div class="text-center relative z-10 max-w-lg w-full animate-fade-up">
+
+        <!-- Illustration Area -->
+        <div class="relative h-64 w-64 mx-auto mb-8 flex items-center justify-center">
+
+            <!-- Central Glowing Bubble -->
+            <div
+                class="glass-bubble w-48 h-48 rounded-full flex items-center justify-center relative z-20 animate-pulse-glow shadow-2xl">
+                <!-- Main Icon: Speech Bubble with Slash -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-white opacity-90 drop-shadow-lg"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+            </div>
+
+            <!-- Floating Decorative Icons -->
+            <!-- Heart -->
+            <div class="absolute top-0 right-0 animate-float-delayed-1 z-10 opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-pink-200" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path
+                        d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                </svg>
+            </div>
+
+            <!-- Envelope -->
+            <div class="absolute bottom-4 left-2 animate-float-delayed-2 z-30 opacity-60">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-200" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
+                    <path
+                        d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
+                </svg>
+            </div>
+
+            <!-- Thumbs Up -->
+            <div class="absolute -top-2 left-6 animate-float z-10 opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-200" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path
+                        d="M21 12v-2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L12.17 1 4.41 8.75C4.16 9 4 9.34 4 9.75v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73zM0 10h3v11H0z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-md">
+            No conversations found
+        </h1>
+        <p class="text-lg text-white/80 font-light max-w-md mx-auto leading-relaxed">
+            Start a new conversation to download your messages.
+        </p>
+
+        <!-- Optional: Action Button to maintain flow -->
+        <div class="mt-8">
+            <a href="/"
+                class="inline-block px-8 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-semibold transition-all border border-white/40 backdrop-blur-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50">
+                Go Home
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Background Decorative Element (Bottom right glow) -->
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-pink-400/20 rounded-full filter blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute top-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl pointer-events-none">
+    </div>
+
+</body>
+
+</html>

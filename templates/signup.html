@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sign Up | MediSimplify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="auth-body">
+    <div class="auth-container glass-panel fade-in-up">
+        <div class="auth-header">
+            <i class="ri-user-add-fill brand-icon"></i>
+            <h2>Create Account</h2>
+            <p>Join MediSimplify today</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/signup">
+            <div class="input-group">
+                <i class="ri-user-line"></i>
+                <input type="text" name="username" placeholder="Choose a Username" required>
+            </div>
+            <div class="input-group">
+                <i class="ri-lock-line"></i>
+                <input type="password" name="password" placeholder="Choose a Password" required>
+            </div>
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+
+        <p class="auth-footer">Already have an account? <a href="/login">Login</a></p>
+    </div>
+</body>
+
+</html>
