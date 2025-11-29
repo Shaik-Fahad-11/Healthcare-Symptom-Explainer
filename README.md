@@ -51,7 +51,7 @@ HEALTHCARE-SYMPTOM-EXPLAINER/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/healthcare-symptom-explainer.git
+git clone https://github.com/Shaik-Fahad-11/healthcare-symptom-explainer.git
 cd healthcare-symptom-explainer
 ```
 
